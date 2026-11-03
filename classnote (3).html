@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fb">
+<title>ClassNote</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23121c3d'/%3E%3Cpath d='M20 22h24M20 32h16M20 42h20' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='46' cy='40' r='6' fill='%238b7ae6'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f7f8fb;--card:#fff;--line:#e6e9f0;--line2:#f1f3f7;
+  --ink:#151a26;--ink2:#363c4d;--muted:#646c80;--faint:#8a91a3;
+  --navy:#121c3d;--navy2:#22336b;--navy-soft:#eef1f8;
+  --accent:#6f5bd9;--accent-soft:#f3f1fd;
+  --red:#dc2626;--red-soft:#fef2f2;--amber:#b45309;--amber-soft:#fffbeb;--green:#059669;
+  --r:16px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:15px}
+button{font:inherit;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{font:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em;font-size:17px;margin-right:auto}
+.logo i{display:block;width:30px;height:30px;border-radius:9px;background:var(--navy);position:relative}
+.logo i::after{content:"";position:absolute;right:6px;bottom:7px;width:8px;height:8px;border-radius:50%;background:#8b7ae6}
+.tabs{display:flex;background:#eceff5;border-radius:12px;padding:3px}
+.tabs button{border:0;background:none;padding:8px 14px;border-radius:9px;color:var(--muted);font-weight:550;font-size:14px}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.08)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:11px 18px;font-weight:550;font-size:14px;border:1px solid transparent;transition:.15s}
+.primary{background:var(--navy);color:#fff}.primary:hover{background:var(--navy2)}
+.secondary{background:#fff;border-color:var(--line);color:var(--ink)}.secondary:hover{background:#f8fafc}
+.danger{background:var(--red);color:#fff}.danger:hover{background:#b91c1c}
+.ghost{background:none;color:var(--muted)}.ghost:hover{background:#f1f5f9;color:var(--ink)}
+.ghost-red{background:#fff;border-color:#fecaca;color:var(--red)}
+.big{padding:14px 22px;font-size:15px}
+.controls{padding:18px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.status{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:550;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1}
+.dot.live{background:#ef4444;animation:pulse 1.4s infinite}.dot.pause{background:#f59e0b}
+@keyframes pulse{50%{opacity:.4;transform:scale(.85)}}
+.clock{font:600 32px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.02em;margin-top:2px}
+.meter{flex:1;min-width:160px;height:48px;background:#f6f7fa;border-radius:12px;padding:0 10px}
+.meter canvas{width:100%;height:100%;display:block}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.opts{border-top:1px solid var(--line2);padding:12px 18px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.opts select{border:1px solid var(--line);border-radius:9px;padding:6px 8px;background:#fff;color:var(--ink)}
+.opts label{display:flex;align-items:center;gap:6px}
+.alert{border-radius:12px;padding:11px 14px;font-size:14px;line-height:1.5;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.alert.err{background:var(--red-soft);border:1px solid #fecaca;color:#991b1b}
+.alert.warn{background:var(--amber-soft);border:1px solid #fde68a;color:#78350f}
+.alert.info{background:var(--navy-soft);border:1px solid #dbe2f1;color:var(--navy2)}
+.alert .x{margin-left:auto;border:0;background:none;opacity:.6;font-size:18px;line-height:1;padding:0 2px}
+.alert a,.alert .link{color:inherit;font-weight:650;text-decoration:underline;background:none;border:0;padding:0}
+.tr-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line2);gap:10px}
+.seg{display:flex;background:#f1f3f7;border-radius:9px;padding:2px;font-size:12px;font-weight:550}
+.seg button{border:0;background:none;padding:6px 10px;border-radius:7px;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.small{font-size:12px;color:var(--faint)}
+.scroller{height:calc(100dvh - 330px);min-height:380px;overflow-y:auto;position:relative;padding:0 6px}
+.cols{display:none}
+.row{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid #f6f7f9;animation:in .3s ease-out both}
+@keyframes in{from{opacity:0;transform:translateY(3px)}}
+.t{width:46px;flex-shrink:0;font:11px ui-monospace,Menlo,monospace;color:var(--faint);padding-top:4px}
+.pair{flex:1;display:grid;gap:6px;line-height:1.6}
+.src{color:var(--ink)}
+.dst{color:var(--navy2);border-left:2px solid #e8e4fb;padding-left:10px}
+.partial{color:var(--faint);font-style:italic}
+.partial::after{content:"";display:inline-block;width:2px;height:15px;background:var(--accent);margin-left:3px;transform:translateY(3px);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+.skel{height:10px;border-radius:5px;background:#f1f3f7;animation:pulse 1.4s infinite;margin:6px 0}
+.hide-src .src,.hide-dst .dst{display:none}
+.hide-src .dst,.hide-dst .src{border:0;padding:0}
+@media(min-width:780px){
+  .pair{grid-template-columns:1fr 1fr;gap:26px}
+  .dst{border:0;padding:0}
+  .hide-src .pair,.hide-dst .pair{grid-template-columns:1fr}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;padding:8px 14px 8px 72px;font-size:11px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--line2);position:sticky;top:0;background:#fffffff2;z-index:2}
+  .hide-src .cols,.hide-dst .cols{display:none}
+}
+.empty{text-align:center;padding:70px 24px;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px}
+.empty p{max-width:380px;margin:0 auto;font-size:14px;line-height:1.55}
+.follow{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:var(--navy);color:#fff;border:0;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;box-shadow:0 8px 24px -8px rgba(18,28,61,.4);display:none}
+.lib-top{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search{flex:1;min-width:200px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:#fff}
+.search:focus,.field:focus{outline:none;border-color:#8b7ae6;box-shadow:0 0 0 4px var(--accent-soft)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.lec{padding:18px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:var(--r);transition:.15s;display:flex;flex-direction:column;gap:8px;min-height:130px}
+.lec:hover{transform:translateY(-2px);box-shadow:0 8px 24px -10px rgba(18,28,61,.2)}
+.pill{align-self:flex-start;background:var(--navy-soft);color:var(--navy2);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+.lec h3{margin:0;font-size:15.5px;line-height:1.35}
+.lec .meta{margin-top:auto;font-size:12px;color:var(--faint)}
+.lec .hit{font-size:12px;color:var(--muted);font-style:italic}
+.detail-head{display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.detail-head h1{margin:0;font-size:24px;letter-spacing:-.02em}
+.back{border:0;background:none;color:var(--muted);padding:0;margin-bottom:12px;font-size:14px}
+.tools{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin-bottom:16px}
+.tool{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:left}
+.tool:hover{border-color:#c9c0f3;background:#fcfbff}
+.tool b{display:block;font-size:14px;margin-bottom:3px}
+.tool span{font-size:12.5px;color:var(--muted);line-height:1.45}
+audio{width:100%;margin-bottom:14px}
+.modal-bg{position:fixed;inset:0;background:rgba(11,18,42,.4);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:0}
+.modal-bg.open{display:flex}
+.modal{background:#fff;width:100%;max-width:440px;border-radius:18px 18px 0 0;padding:22px;max-height:92dvh;overflow-y:auto}
+@media(min-width:600px){.modal-bg{align-items:center;padding:16px}.modal{border-radius:18px}}
+.modal h2{margin:0 0 6px;font-size:18px}
+.lbl{display:block;font-size:13px;font-weight:550;color:var(--ink2);margin:14px 0 6px}
+.field{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:11px;margin-top:14px;font-size:14px}
+.modal-actions{display:flex;justify-content:space-between;gap:8px;margin-top:20px;flex-wrap:wrap-reverse}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:60;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.settings{padding:18px;margin-top:16px}
+.settings h3{margin:0 0 4px;font-size:15px}
+.hidden{display:none!important}
+.sum{padding:18px 20px;margin-bottom:16px}
+.sum-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sum h3{margin:0;font-size:16px}
+.sum .ov{line-height:1.65;color:var(--ink2);margin:0 0 10px}
+.sum ul{margin:0;padding-left:20px;line-height:1.65;color:var(--ink2)}
+.sum li{margin:4px 0}
+.sum .txt{white-space:pre-wrap;line-height:1.65;color:var(--ink2)}
+.sum .note{font-size:12px;color:var(--faint);margin-top:12px}
+.tool.main{border-color:#c9c0f3;background:var(--accent-soft)}
+.progress{height:6px;border-radius:3px;background:#eceff5;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.ai-links{display:grid;gap:8px;margin-top:14px}
+.ai-links .btn{justify-content:flex-start}
+textarea.field{min-height:160px;resize:vertical;line-height:1.5}
+.help{border:0;background:#eceff5;width:34px;height:34px;border-radius:10px;font-weight:700;color:var(--muted)}
+.help-list{margin:10px 0 0;padding-left:20px;line-height:1.6;font-size:14px;color:var(--ink2)}
+.help-list li{margin:6px 0}
+#print{display:none}
+@media print{
+  @page{margin:16mm 14mm}
+  body{background:#fff}
+  .wrap,.modal-bg,.toast{display:none!important}
+  #print{display:block;color:#111;font-size:11pt;line-height:1.5}
+  #print h1{font-size:20pt;margin:0 0 4px}
+  #print .pm{color:#555;font-size:10pt;margin-bottom:18px}
+  #print h2{font-size:13pt;margin:20px 0 8px;border-bottom:1px solid #ccc;padding-bottom:4px}
+  #print ul{margin:0;padding-left:18px}
+  #print li{margin:3px 0}
+  #print table{width:100%;border-collapse:collapse;font-size:10pt}
+  #print td{vertical-align:top;padding:5px 6px;border-bottom:1px solid #e5e5e5;break-inside:avoid}
+  #print td.tm{width:44px;color:#777;font-family:ui-monospace,Menlo,monospace;font-size:8.5pt}
+  #print td.tr{color:#333;font-style:italic}
+  #print .ft{margin-top:20px;color:#888;font-size:8.5pt}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><i></i>ClassNote</div>
+    <button class="help" onclick="openHelp()" aria-label="Aide">?</button>
+    <nav class="tabs">
+      <button id="tab-live" class="on" onclick="show('live')">En direct</button>
+      <button id="tab-lib" onclick="show('lib')">Mes cours</button>
+    </nav>
+  </header>
+
+  <div id="alerts"></div>
+
+  <!-- ============ EN DIRECT ============ -->
+  <section id="view-live">
+    <div class="card" style="margin-bottom:16px">
+      <div class="controls">
+        <div>
+          <div class="status"><span id="dot" class="dot"></span><span id="status">Prête</span></div>
+          <div id="clock" class="clock">00:00</div>
+        </div>
+        <div class="meter"><canvas id="meter"></canvas></div>
+        <div class="actions" id="actions"></div>
+      </div>
+      <div class="opts" id="opts">
+        <label>Le prof parle
+          <select id="srcLang">
+            <option value="en-US">Anglais (US)</option>
+            <option value="en-GB">Anglais (UK)</option>
+            <option value="es-ES">Espagnol</option>
+            <option value="fr-FR">Français</option>
+          </select>
+        </label>
+        <label>Traduire en
+          <select id="dstLang">
+            <option value="fr">Français</option>
+            <option value="es">Espagnol</option>
+            <option value="en">Anglais</option>
+          </select>
+        </label>
+        <label>Micro
+          <select id="micSel"><option value="">Micro par défaut</option></select>
+        </label>
+        <label>Sensibilité
+          <select id="boost">
+            <option value="1">Normale (prof proche)</option>
+            <option value="2.5">Élevée (salle de cours)</option>
+            <option value="4">Maximale (amphi, prof loin)</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="keepAudio"> Enregistrer aussi l'audio</label>
+        <span id="engineInfo" class="small" style="margin-left:auto"></span>
+      </div>
+    </div>
+
+    <div class="card" style="overflow:hidden">
+      <div class="tr-head">
+        <div class="seg" id="viewSeg">
+          <button data-v="both" class="on">Les deux</button>
+          <button data-v="src">Original</button>
+          <button data-v="dst">Traduction</button>
+        </div>
+        <span class="small" id="count">0 phrase</span>
+      </div>
+      <div class="scroller" id="scroller">
+        <div class="cols"><span>Original</span><span>Traduction</span></div>
+        <div id="rows"></div>
+        <div id="empty" class="empty">
+          <b>Prête quand vous l'êtes</b>
+          <p>Cliquez sur « Démarrer », autorisez le micro, et laissez faire. La traduction s'affiche à droite de chaque phrase.</p>
+        </div>
+      </div>
+      <button class="follow" id="follow">↓ Revenir au direct</button>
+    </div>
+  </section>
+
+  <!-- ============ MES COURS ============ -->
+  <section id="view-lib" class="hidden">
+    <div id="lib-list">
+      <div class="lib-top">
+        <input id="search" class="search" placeholder="Rechercher un titre, une matière ou un mot du cours…">
+        <select id="subjectFilter" class="search" style="flex:0 1 200px"></select>
+      </div>
+      <div id="grid" class="grid"></div>
+      <div class="card settings">
+        <h3>Sauvegarde</h3>
+        <p class="small" style="margin:0 0 12px">Vos cours sont stockés dans ce navigateur, sur cet appareil. Faites une sauvegarde de temps en temps : si vous videz les données du navigateur, ils disparaissent.</p>
+        <div class="actions">
+          <button class="btn secondary" onclick="exportBackup()">Télécharger une sauvegarde</button>
+          <label class="btn secondary">Importer une sauvegarde ou un cours<input type="file" accept=".json" class="hidden" onchange="importBackup(this.files[0]);this.value=''"></label>
+        </div>
+      </div>
+    </div>
+
+    <div id="lib-detail" class="hidden">
+      <button class="back" onclick="closeDetail()">← Mes cours</button>
+      <div class="detail-head">
+        <div>
+          <h1 id="d-title"></h1>
+          <div class="small" id="d-meta" style="margin-top:4px;font-size:13px"></div>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" onclick="renameLecture()">Renommer</button>
+          <button class="btn ghost-red" onclick="deleteLecture()">Supprimer</button>
+        </div>
+      </div>
+      <audio id="d-audio" controls class="hidden"></audio>
+      <div class="tools">
+        <button class="tool main" onclick="openSummary()"><b>Résumé IA</b><span>Les points clés du cours, en français. Gratuit.</span></button>
+        <button class="tool main" onclick="printLecture()"><b>Télécharger en PDF</b><span>Résumé + transcription et traduction, prêt à imprimer ou envoyer.</span></button>
+        <button class="tool" onclick="copyPrompt('notes')"><b>Notes complètes (Claude)</b><span>Copie le cours avec les consignes. Collez dans Claude pour des notes détaillées.</span></button>
+        <button class="tool" onclick="copyPrompt('quiz')"><b>Quiz et flashcards</b><span>Même principe : collez dans Claude pour réviser avant l'examen.</span></button>
+        <button class="tool" onclick="shareLecture()"><b>Partager ce cours</b><span>Envoyez-le à un ami de la classe : il l'importe dans son ClassNote.</span></button>
+        <button class="tool" onclick="downloadText()"><b>Télécharger le texte</b><span>Transcription et traduction, fichier .txt.</span></button>
+        <button class="tool" id="d-dl-audio" onclick="downloadAudio()"><b>Télécharger l'audio</b><span>Si vous l'avez enregistré.</span></button>
+      </div>
+      <div class="card sum hidden" id="d-summary"></div>
+      <div class="card" style="overflow:hidden">
+        <div class="tr-head">
+          <div class="seg" id="viewSeg2">
+            <button data-v="both" class="on">Les deux</button>
+            <button data-v="src">Original</button>
+            <button data-v="dst">Traduction</button>
+          </div>
+          <span class="small" id="d-count"></span>
+        </div>
+        <div id="d-wrap" style="padding:0 6px">
+          <div class="cols"><span>Original</span><span>Traduction</span></div>
+          <div id="d-rows"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Fenêtre d'enregistrement -->
+<div class="modal-bg" id="saveModal">
+  <div class="modal">
+    <h2>Enregistrer ce cours ?</h2>
+    <div class="small" id="saveInfo" style="font-size:13px"></div>
+    <label class="lbl">Titre</label>
+    <input class="field" id="saveTitle">
+    <label class="lbl">Matière</label>
+    <input class="field" id="saveSubject" list="subjects" placeholder="Ex. International Trade">
+    <datalist id="subjects"></datalist>
+    <label class="check" id="saveAudioRow"><input type="checkbox" id="saveAudio" checked> <span>Garder l'enregistrement audio <span class="small" id="saveAudioSize" style="display:block"></span></span></label>
+    <div class="modal-actions">
+      <button class="btn ghost-red" onclick="discardSession()">Supprimer</button>
+      <button class="btn primary" onclick="saveSession()">Enregistrer le cours</button>
+    </div>
+  </div>
+</div>
+
+<!-- Résumé IA -->
+<div class="modal-bg" id="sumModal">
+  <div class="modal">
+    <h2>Résumé IA</h2>
+    <div id="sumBody"></div>
+  </div>
+</div>
+
+<!-- Aide -->
+<div class="modal-bg" id="helpModal">
+  <div class="modal">
+    <h2>Comment ça marche</h2>
+    <ol class="help-list">
+      <li>Ouvrez ce fichier dans <b>Google Chrome</b> (ou Edge, Safari).</li>
+      <li>Choisissez la langue du prof, puis cliquez sur <b>Démarrer l'enregistrement</b> et autorisez le micro.</li>
+      <li>Posez l'appareil près du prof. En amphi, mettez la sensibilité sur <b>Maximale</b>.</li>
+      <li>À la fin : <b>Arrêter</b>, donnez un titre, enregistrez.</li>
+      <li>Dans <b>Mes cours</b> : <b>Résumé IA</b>, <b>Télécharger en PDF</b>, quiz, ou <b>Partager ce cours</b> avec un ami.</li>
+      <li>Les cours restent sur votre appareil. Faites une sauvegarde de temps en temps.</li>
+    </ol>
+    <p class="small" style="margin-top:14px">Tout est gratuit. La transcription utilise la reconnaissance vocale du navigateur : elle a besoin d'internet.</p>
+    <div class="modal-actions"><span></span><button class="btn primary" onclick="closeModal('helpModal')">Compris</button></div>
+  </div>
+</div>
+
+<div id="print"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ClassNote — version gratuite, 100 % dans le navigateur
+   - Reconnaissance vocale : Web Speech API (Chrome, Edge, Safari)
+   - Traduction : traducteur intégré de Chrome si disponible,
+     sinon service gratuit de Google Traduction, sinon MyMemory
+   - Stockage : localStorage (texte) + IndexedDB (audio)
+   ============================================================ */
+
+const $ = (id) => document.getElementById(id);
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+/* ---------- Utilitaires ---------- */
+function clock(ms){const s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;const p=n=>String(n).padStart(2,"0");return h?`${h}:${p(m)}:${p(x)}`:`${p(m)}:${p(x)}`}
+function dur(ms){const m=Math.round(ms/60000);return m<60?`${m} min`:`${Math.floor(m/60)} h ${String(m%60).padStart(2,"0")}`}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function tidy(t){t=t.trim().replace(/\s+/g," ");if(!t)return t;t=t[0].toUpperCase()+t.slice(1);if(!/[.!?…]$/.test(t))t+=".";return t}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2600)}
+function alertBox(msg,type="err",id){
+  if(id&&document.querySelector(`[data-alert="${id}"]`))return;
+  const d=document.createElement("div");d.className="alert "+type;if(id)d.dataset.alert=id;
+  d.innerHTML=`<div>${msg}</div><button class="x" aria-label="Fermer">×</button>`;
+  d.querySelector(".x").onclick=()=>d.remove();$("alerts").prepend(d);return d;
+}
+function clearAlerts(){$("alerts").innerHTML=""}
+
+/* ---------- Stockage ---------- */
+const LKEY="classnote_lectures", DKEY="classnote_draft", SKEY="classnote_settings";
+function loadLectures(){try{return JSON.parse(localStorage.getItem(LKEY))||[]}catch{return[]}}
+function storeLectures(list){try{localStorage.setItem(LKEY,JSON.stringify(list));return true}catch(e){alertBox("Mémoire du navigateur pleine : téléchargez une sauvegarde puis supprimez d'anciens cours.");return false}}
+const idb=(()=>{let p;const open=()=>p??=new Promise((res,rej)=>{const r=indexedDB.open("classnote",1);r.onupgradeneeded=()=>r.result.createObjectStore("audio");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+  const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const t=db.transaction("audio",mode);const r=fn(t.objectStore("audio"));t.oncomplete=()=>res(r?.result);t.onerror=()=>rej(t.error)})};
+  return{put:(k,v)=>tx("readwrite",s=>s.put(v,k)),get:k=>tx("readonly",s=>s.get(k)),del:k=>tx("readwrite",s=>s.delete(k))}})();
+
+const settings=Object.assign({srcLang:"en-US",dstLang:"fr",keepAudio:!isMobile,micId:"",boost:"2.5"},JSON.parse(localStorage.getItem(SKEY)||"{}"));
+function saveSettings(){localStorage.setItem(SKEY,JSON.stringify(settings))}
+$("srcLang").value=settings.srcLang;$("dstLang").value=settings.dstLang;$("keepAudio").checked=settings.keepAudio;
+$("srcLang").onchange=e=>{settings.srcLang=e.target.value;saveSettings();resetTranslator()};
+$("dstLang").onchange=e=>{settings.dstLang=e.target.value;saveSettings();resetTranslator()};
+$("keepAudio").onchange=e=>{settings.keepAudio=e.target.checked;saveSettings()};
+$("boost").value=settings.boost;
+$("boost").onchange=e=>{settings.boost=e.target.value;settings.noTrack=false;saveSettings();if(gainNode)gainNode.gain.value=+settings.boost};
+$("micSel").onchange=e=>{settings.micId=e.target.value;saveSettings()};
+async function listMics(){
+  try{
+    const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==="audioinput");
+    $("micSel").innerHTML=`<option value="">Micro par défaut</option>`+devs.filter(d=>d.deviceId&&d.deviceId!=="default").map((d,i)=>`<option value="${esc(d.deviceId)}">${esc(d.label||"Micro "+(i+1))}</option>`).join("");
+    $("micSel").value=devs.some(d=>d.deviceId===settings.micId)?settings.micId:"";
+  }catch{}
+}
+listMics();navigator.mediaDevices?.addEventListener?.("devicechange",listMics);
+
+/* ---------- Traduction gratuite ---------- */
+let chromeTr=null, trEngine="";
+function resetTranslator(){chromeTr=null;trEngine=""}
+async function prepareChromeTranslator(){
+  // Traducteur intégré à Chrome (ordinateur) : gratuit, privé, sans limite
+  try{
+    if(!("Translator" in self))return;
+    const opt={sourceLanguage:settings.srcLang.slice(0,2),targetLanguage:settings.dstLang};
+    if(opt.sourceLanguage===opt.targetLanguage)return;
+    const a=await Translator.availability(opt);
+    if(a==="unavailable")return;
+    if(a!=="available")setEngine("Téléchargement du traducteur Chrome…");
+    chromeTr=await Translator.create(opt);
+    setEngine("Traduction : Chrome (intégrée)");
+  }catch{chromeTr=null}
+}
+function setEngine(t){trEngine=t;$("engineInfo").textContent=t}
+async function translate(text,from,to){
+  const sl=(from||settings.srcLang).slice(0,2), tl=to||settings.dstLang;
+  if(sl===tl)return text;
+  const live=!from&&!to;
+  if(live&&chromeTr){try{return await chromeTr.translate(text)}catch{}}
+  if(!live&&"Translator" in self){
+    try{const k=sl+">"+tl;translate.cache??={};
+      if(!translate.cache[k]&&(await Translator.availability({sourceLanguage:sl,targetLanguage:tl}))==="available")translate.cache[k]=await Translator.create({sourceLanguage:sl,targetLanguage:tl});
+      if(translate.cache[k])return await translate.cache[k].translate(text)}catch{}
+  }
+  try{
+    const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`);
+    if(r.ok){const j=await r.json();const out=(j[0]||[]).map(x=>x[0]).join("");if(out){if(!chromeTr)setEngine("Traduction : Google (gratuite)");return out}}
+  }catch{}
+  const r2=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0,480))}&langpair=${sl}|${tl}`);
+  const j2=await r2.json();
+  if(j2?.responseStatus!==200&&j2?.responseStatus!=="200")throw new Error(j2?.responseDetails||"quota");
+  setEngine("Traduction : MyMemory (gratuite, limitée)");
+  return j2.responseData.translatedText;
+}
+
+/* ---------- État de la séance ---------- */
+let phase="idle";       // idle | recording | paused | review
+let segs=[];            // {id,t,src,dst,status:'final'|'partial',tr:'pending'|'done'|'error'}
+let partial=null;       // segment provisoire
+let rec=null, wantListening=false, lastResultAt=0;
+let accMs=0, runSince=0, tick=null;
+let media=null, audioCtx=null, analyser=null, gainNode=null, boosted=null, mrec=null, chunks=[], audioMime="";
+let soundSince=0, hintShown=false;
+let trackMode=false, gotResult=false, fallbackTimer=null, maxLevel=0;
+let wakeLock=null, follow=true, view="both", resultBlob=null, segCounter=0;
+
+const elapsed=()=>accMs+(runSince?performance.now()-runSince:0);
+
+/* ---------- Interface : contrôles ---------- */
+function renderControls(){
+  const a=$("actions");
+  const st={idle:["Prête",""],recording:["En direct","live"],paused:["En pause","pause"],review:["Terminé",""]}[phase];
+  $("status").textContent=st[0];$("dot").className="dot "+st[1];
+  $("opts").style.display=phase==="idle"?"":"none";
+  if(phase==="idle")a.innerHTML=`<button class="btn primary big" onclick="start()">● Démarrer l'enregistrement</button>`;
+  else if(phase==="recording")a.innerHTML=`<button class="btn secondary" onclick="pause()">❚❚ Pause</button><button class="btn danger" onclick="stop()">■ Arrêter</button>`;
+  else if(phase==="paused")a.innerHTML=`<button class="btn secondary" onclick="resume()">▶ Reprendre</button><button class="btn danger" onclick="stop()">■ Arrêter</button>`;
+  else a.innerHTML=`<button class="btn primary" onclick="openSave()">Enregistrer le cours</button>`;
+}
+
+/* ---------- Interface : transcription ---------- */
+function rowHTML(s){
+  const src=s.status==="partial"?`<div class="src partial">${esc(s.src)||"…"}</div>`:`<div class="src">${esc(s.src)}</div>`;
+  let dst="";
+  if(s.status==="final"){
+    if(s.tr==="pending")dst=`<div class="dst"><div class="skel" style="width:90%"></div><div class="skel" style="width:60%"></div></div>`;
+    else if(s.tr==="error")dst=`<div class="dst"><button class="link" style="border:0;background:none;color:#dc2626;padding:0" onclick="retry('${s.id}')">Traduction échouée — réessayer</button></div>`;
+    else dst=`<div class="dst">${esc(s.dst)}</div>`;
+  } else dst=`<div class="dst"></div>`;
+  return `<div class="row" id="r-${s.id}"><div class="t">${clock(s.t)}</div><div class="pair">${src}${dst}</div></div>`;
+}
+function upsertRow(s){
+  const el=$("r-"+s.id);const html=rowHTML(s);
+  if(el)el.outerHTML=html;else $("rows").insertAdjacentHTML("beforeend",html);
+  $("empty").style.display="none";
+  const n=segs.length;$("count").textContent=n+(n>1?" phrases":" phrase");
+  if(follow&&phase!=="idle")$("scroller").scrollTop=$("scroller").scrollHeight;
+}
+function removeRow(id){$("r-"+id)?.remove()}
+function renderAll(){$("rows").innerHTML="";segs.forEach(upsertRow);if(!segs.length)$("empty").style.display=""}
+
+$("scroller").addEventListener("scroll",()=>{const el=$("scroller");follow=el.scrollHeight-el.scrollTop-el.clientHeight<80;$("follow").style.display=(!follow&&phase==="recording")?"block":"none"});
+$("follow").onclick=()=>{follow=true;$("scroller").scrollTop=$("scroller").scrollHeight;$("follow").style.display="none"};
+
+function bindSeg(segId,targetId){
+  $(segId).querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    $(segId).querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+    const t=$(targetId);t.classList.toggle("hide-src",b.dataset.v==="dst");t.classList.toggle("hide-dst",b.dataset.v==="src");
+  });
+}
+bindSeg("viewSeg","scroller");bindSeg("viewSeg2","d-wrap");
+
+/* ---------- Segments ---------- */
+function setPartial(text){
+  if(!text){if(partial){removeRow(partial.id);partial=null}return}
+  if(!partial)partial={id:"p"+(++segCounter),t:elapsed(),src:"",status:"partial"};
+  partial.src=text;upsertRow(partial);
+}
+function addFinal(text){
+  text=tidy(text);if(!text)return;
+  const t=partial?partial.t:Math.max(0,elapsed()-3000);
+  if(partial){removeRow(partial.id);partial=null}
+  // Anti-doublon (Chrome Android renvoie parfois la phrase précédente complétée)
+  const last=segs[segs.length-1];
+  const norm=s=>s.toLowerCase().replace(/[^\p{L}\p{N} ]/gu,"").trim();
+  if(last&&norm(text).startsWith(norm(last.src).replace(/ $/,""))&&t-last.t<15000){
+    last.src=text;last.tr="pending";upsertRow(last);doTranslate(last);saveDraft();return;
+  }
+  if(last&&norm(text)===norm(last.src))return;
+  const s={id:"s"+(++segCounter),t,src:text,dst:"",status:"final",tr:"pending"};
+  segs.push(s);upsertRow(s);doTranslate(s);saveDraft();
+}
+async function doTranslate(s){
+  const ctxText=s.src;
+  try{const out=await translate(ctxText);if(s.src!==ctxText)return;s.dst=out;s.tr="done"}
+  catch(e){s.tr="error";alertBox("La traduction gratuite ne répond pas pour le moment (réseau ou limite atteinte). La transcription continue ; vous pourrez relancer les traductions.","warn","tr")}
+  upsertRow(s);saveDraft();
+}
+window.retry=id=>{const s=segs.find(x=>x.id===id);if(s){s.tr="pending";upsertRow(s);doTranslate(s)}};
+
+/* ---------- Reconnaissance vocale ---------- */
+function startRecognition(){
+  trackMode=!!boosted&&!settings.noTrack;gotResult=false;maxLevel=0;
+  clearTimeout(fallbackTimer);
+  if(trackMode)fallbackTimer=setTimeout(()=>{
+    if(!gotResult&&trackMode&&wantListening)fallbackToPlain(maxLevel>.08); // du son mais aucun texte => ce Chrome ne gère pas le mode amplifié
+  },7000);
+  rec=new SR();
+  rec.lang=settings.srcLang;rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
+  rec.onresult=e=>{
+    lastResultAt=Date.now();gotResult=true;
+    let interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i];
+      if(r.isFinal)addFinal(r[0].transcript);else interim+=r[0].transcript;
+    }
+    setPartial(interim.trim());
+  };
+  rec.onerror=e=>{
+    if(trackMode&&e.error!=="network"&&e.error!=="no-speech"&&e.error!=="aborted"){fallbackToPlain(true);return}
+    if(e.error==="audio-capture"&&media){
+      // Certains téléphones refusent deux captures du micro : on laisse le micro à la reconnaissance seule
+      stopMedia();toast("Mode micro simple activé");return;
+    }
+    if(e.error==="not-allowed"||e.error==="service-not-allowed"){
+      wantListening=false;
+      alertBox("Micro refusé. Cliquez sur l'icône à gauche de l'adresse du site, autorisez le micro, puis réessayez.");
+      hardStop();
+    }else if(e.error==="network"){
+      alertBox("Connexion internet perdue : la reconnaissance vocale a besoin d'internet. Elle reprendra dès le retour du réseau.","warn","net");
+    }else if(e.error==="audio-capture"){
+      wantListening=false;alertBox("Aucun micro détecté.");hardStop();
+    }
+  };
+  rec.onend=()=>{
+    // Le navigateur coupe régulièrement l'écoute : on relance automatiquement.
+    if(partial&&partial.src)addFinal(partial.src);
+    if(wantListening)setTimeout(()=>{if(wantListening)listen()},30);
+  };
+  listen();
+}
+function listen(){
+  // Mode amplifié : Chrome récent accepte une piste audio (son filtré + amplifié).
+  // Sinon, mode normal : le navigateur écoute le micro lui-même.
+  const track=boosted?.getAudioTracks()[0];
+  if(trackMode&&track&&track.readyState==="live"){
+    try{rec.start(track);return}catch(e){trackMode=false}
+  }
+  try{rec.start()}catch{}
+}
+function fallbackToPlain(remember){
+  if(!trackMode)return;
+  trackMode=false;clearTimeout(fallbackTimer);
+  if(remember){settings.noTrack=true;saveSettings()}
+  try{rec.abort()}catch{} // onend relance l'écoute en mode normal
+  // Dernier recours : si toujours rien après 12 s, on laisse le micro entièrement à la reconnaissance vocale
+  gotResult=false;maxLevel=0;
+  fallbackTimer=setTimeout(()=>{
+    if(!gotResult&&wantListening&&media&&maxLevel>.08){
+      if(mrec&&mrec.state!=="inactive"){mrec.onstop=()=>{resultBlob=chunks.length?new Blob(chunks,{type:audioMime}):null};mrec.stop()}
+      stopMedia();try{rec.abort()}catch{}
+      toast("Mode micro simple : seule la transcription est gardée");
+    }
+  },12000);
+}
+
+/* ---------- Micro : niveau + enregistrement audio ---------- */
+async function startMedia(){
+  try{
+    // Pas de suppression de bruit ni d'annulation d'écho : elles effacent la voix d'un prof éloigné.
+    media=await navigator.mediaDevices.getUserMedia({audio:{
+      ...(settings.micId?{deviceId:{exact:settings.micId}}:{}),
+      echoCancellation:false,noiseSuppression:false,autoGainControl:true,channelCount:1}});
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended")await audioCtx.resume();
+    const src=audioCtx.createMediaStreamSource(media);
+    const hp=audioCtx.createBiquadFilter();hp.type="highpass";hp.frequency.value=90;      // coupe les bruits sourds (clim, table)
+    const voice=audioCtx.createBiquadFilter();voice.type="peaking";voice.frequency.value=2500;voice.Q.value=.8;voice.gain.value=4; // rend la voix plus claire
+    const comp=audioCtx.createDynamicsCompressor();comp.threshold.value=-45;comp.knee.value=20;comp.ratio.value=6;comp.attack.value=.005;comp.release.value=.25;
+    gainNode=audioCtx.createGain();gainNode.gain.value=+settings.boost;
+    const limiter=audioCtx.createDynamicsCompressor();limiter.threshold.value=-3;limiter.ratio.value=20;limiter.attack.value=.001;
+    const dest=audioCtx.createMediaStreamDestination();
+    src.connect(hp);hp.connect(voice);voice.connect(comp);comp.connect(gainNode);gainNode.connect(limiter);limiter.connect(dest);
+    analyser=audioCtx.createAnalyser();analyser.fftSize=1024;limiter.connect(analyser);
+    boosted=dest.stream;
+    listMics();
+    if(settings.keepAudio&&window.MediaRecorder){
+      const types=["audio/webm;codecs=opus","audio/mp4","audio/webm"];audioMime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+      mrec=new MediaRecorder(boosted,{...(audioMime?{mimeType:audioMime}:{}),audioBitsPerSecond:32000});
+      audioMime=mrec.mimeType||audioMime||"audio/webm";chunks=[];
+      mrec.ondataavailable=e=>e.data.size&&chunks.push(e.data);mrec.start(1000);
+    }
+  }catch(e){
+    media=null;boosted=null;
+    if(e?.name==="OverconstrainedError"||e?.name==="NotFoundError"){settings.micId="";saveSettings();alertBox("Le micro choisi n'est plus disponible : retour au micro par défaut.","warn")}
+  }
+}
+function stopMedia(){
+  media?.getTracks().forEach(t=>t.stop());media=null;boosted=null;
+  audioCtx?.close().catch(()=>{});audioCtx=null;analyser=null;gainNode=null;
+}
+function level(){
+  if(!analyser)return phase==="recording"&&Date.now()-lastResultAt<700?.35+Math.random()*.3:0;
+  const b=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(b);let s=0;for(const v of b){const x=(v-128)/128;s+=x*x}
+  return Math.min(1,Math.sqrt(s/b.length)*4);
+}
+(function meterLoop(){
+  const c=$("meter"),ctx=c.getContext("2d"),hist=[];let last=0;
+  (function draw(t){requestAnimationFrame(draw);if(t-last<50)return;last=t;
+    const dpr=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(c.width!==w*dpr){c.width=w*dpr;c.height=h*dpr}
+    ctx.setTransform(dpr,0,0,dpr,0,0);const bars=Math.floor(w/5);hist.push(phase==="recording"?level():0);if(hist.length>bars)hist.splice(0,hist.length-bars);
+    ctx.clearRect(0,0,w,h);const off=bars-hist.length;
+    hist.forEach((l,i)=>{const bh=Math.max(2,Math.min(h,l*h*1.1));ctx.fillStyle=phase==="recording"?(i>hist.length-4?"#6f5bd9":"#22336b"):"#cbd5e1";ctx.globalAlpha=phase==="recording"?.35+.65*i/hist.length:1;ctx.fillRect((off+i)*5,(h-bh)/2,3,bh)});ctx.globalAlpha=1;
+  })(0);
+})();
+
+/* ---------- Démarrer / pause / arrêter ---------- */
+async function start(){
+  clearAlerts();
+  if(!SR){alertBox("Ce navigateur ne propose pas la reconnaissance vocale. Ouvrez cette page dans <b>Google Chrome</b> (ordinateur ou Android), <b>Edge</b>, ou <b>Safari</b> (Mac, iPhone).");return}
+  segs=[];partial=null;segCounter=0;accMs=0;resultBlob=null;renderAll();
+  localStorage.removeItem(DKEY);
+  prepareChromeTranslator(); // en arrière-plan
+  if(!chromeTr)setEngine("Traduction : gratuite");
+  await startMedia();
+  wantListening=true;
+  try{startRecognition()}catch(e){alertBox("Impossible de démarrer l'écoute : "+esc(e.message));return}
+  runSince=performance.now();phase="recording";renderControls();
+  soundSince=0;hintShown=false;lastResultAt=Date.now();
+  tick=setInterval(()=>{
+    $("clock").textContent=clock(elapsed());
+    if(phase!=="recording"||!analyser)return;
+    const l=level();maxLevel=Math.max(maxLevel,l);
+    if(hintShown)return;
+    if(l>.12)soundSince||=Date.now();
+    if(soundSince&&Date.now()-lastResultAt>15000&&Date.now()-soundSince>10000){
+      hintShown=true;
+      alertBox("Le micro entend du son mais aucune parole n'est reconnue. Essayez : sensibilité « Maximale », rapprochez l'appareil du prof, vérifiez la langue choisie, ou choisissez un autre micro.","warn","hint");
+    }
+  },250);
+  keepAwake();
+}
+function pause(){
+  wantListening=false;try{rec.stop()}catch{}
+  if(mrec?.state==="recording")mrec.pause();
+  accMs+=performance.now()-runSince;runSince=0;phase="paused";renderControls();
+}
+function resume(){
+  wantListening=true;try{rec.start()}catch{startRecognition()}
+  if(mrec?.state==="paused")mrec.resume();
+  runSince=performance.now();phase="recording";renderControls();keepAwake();
+}
+async function stop(){
+  wantListening=false;try{rec?.stop()}catch{}
+  if(runSince){accMs+=performance.now()-runSince;runSince=0}
+  await new Promise(r=>setTimeout(r,600));
+  if(partial&&partial.src)addFinal(partial.src);
+  if(mrec&&mrec.state!=="inactive"){await new Promise(r=>{mrec.onstop=r;mrec.stop()});resultBlob=chunks.length?new Blob(chunks,{type:audioMime}):null}
+  hardStop(true);
+  phase="review";renderControls();$("clock").textContent=clock(accMs);
+  openSave();
+}
+function hardStop(keepPhase){
+  clearInterval(tick);clearTimeout(fallbackTimer);
+  stopMedia();mrec=null;
+  wakeLock?.release().catch(()=>{});wakeLock=null;
+  if(!keepPhase){phase="idle";renderControls()}
+}
+async function keepAwake(){try{if("wakeLock" in navigator&&document.visibilityState==="visible")wakeLock=await navigator.wakeLock.request("screen")}catch{}}
+document.addEventListener("visibilitychange",()=>{if(phase==="recording")keepAwake()});
+window.addEventListener("beforeunload",e=>{if(phase==="recording"||phase==="paused"||phase==="review")e.preventDefault()});
+
+/* ---------- Brouillon de secours ---------- */
+function saveDraft(){if(phase==="idle")return;try{localStorage.setItem(DKEY,JSON.stringify({at:Date.now(),ms:elapsed(),segs}))}catch{}}
+(function checkDraft(){
+  try{const d=JSON.parse(localStorage.getItem(DKEY));if(!d?.segs?.length)return;
+    const box=alertBox(`Un cours non enregistré a été retrouvé (${d.segs.length} phrases, ${new Date(d.at).toLocaleString("fr-FR")}). <button class="link" id="rd">Le récupérer</button> · <button class="link" id="ig">Ignorer</button>`,"warn","draft");
+    $("rd").onclick=()=>{segs=d.segs;segCounter=segs.length+1;accMs=d.ms;resultBlob=null;renderAll();phase="review";renderControls();$("clock").textContent=clock(accMs);box.remove();segs.filter(s=>s.tr==="pending").forEach(doTranslate);openSave()};
+    $("ig").onclick=()=>{localStorage.removeItem(DKEY);box.remove()};
+  }catch{}
+})();
+
+/* ---------- Sauvegarde du cours ---------- */
+function openSave(){
+  const now=new Date();
+  $("saveTitle").value=`Cours du ${now.toLocaleDateString("fr-FR")}`;
+  $("saveInfo").textContent=`${segs.length} phrases · ${clock(accMs)}. Rien n'est gardé sans votre accord.`;
+  $("subjects").innerHTML=[...new Set(loadLectures().map(l=>l.subject).filter(Boolean))].map(s=>`<option value="${esc(s)}">`).join("");
+  $("saveAudioRow").style.display=resultBlob?"":"none";
+  if(resultBlob)$("saveAudioSize").textContent=(resultBlob.size/1048576).toFixed(1)+" Mo, stocké sur cet appareil";
+  $("saveModal").classList.add("open");
+}
+$("saveModal").onclick=e=>{if(e.target.id==="saveModal")$("saveModal").classList.remove("open")};
+async function saveSession(){
+  const id="L"+Date.now();
+  const lec={id,title:$("saveTitle").value.trim()||"Cours sans titre",subject:$("saveSubject").value.trim(),date:new Date().toISOString(),ms:Math.round(accMs),
+    src:settings.srcLang,dst:settings.dstLang,hasAudio:false,segs:segs.filter(s=>s.status==="final").map(s=>({t:Math.round(s.t),src:s.src,dst:s.tr==="done"?s.dst:""}))};
+  if(resultBlob&&$("saveAudio").checked){try{await idb.put(id,resultBlob);lec.hasAudio=true}catch{alertBox("L'audio n'a pas pu être gardé (espace insuffisant). Le texte est enregistré.","warn")}}
+  const list=loadLectures();list.unshift(lec);
+  if(!storeLectures(list))return;
+  localStorage.removeItem(DKEY);
+  $("saveModal").classList.remove("open");
+  phase="idle";segs=[];renderAll();renderControls();$("clock").textContent="00:00";
+  toast("Cours enregistré");show("lib");openDetail(id);
+}
+function discardSession(){
+  if(!confirm("Supprimer définitivement ce cours ?"))return;
+  localStorage.removeItem(DKEY);$("saveModal").classList.remove("open");
+  phase="idle";segs=[];resultBlob=null;renderAll();renderControls();$("clock").textContent="00:00";
+}
+
+/* ---------- Bibliothèque ---------- */
+function show(v){
+  if((phase==="recording"||phase==="paused")&&v!=="live"){toast("Le cours continue d'être enregistré en arrière-plan");}
+  $("view-live").classList.toggle("hidden",v!=="live");$("view-lib").classList.toggle("hidden",v!=="lib");
+  $("tab-live").classList.toggle("on",v==="live");$("tab-lib").classList.toggle("on",v==="lib");
+  if(v==="lib"){closeDetail();renderLib()}
+}
+function renderLib(){
+  const list=loadLectures();const q=$("search").value.trim().toLowerCase();const sub=$("subjectFilter").value;
+  const subjects=[...new Set(list.map(l=>l.subject).filter(Boolean))].sort();
+  $("subjectFilter").innerHTML=`<option value="">Toutes les matières</option>`+subjects.map(s=>`<option ${s===sub?"selected":""}>${esc(s)}</option>`).join("");
+  const items=list.filter(l=>!sub||l.subject===sub).map(l=>{
+    if(!q)return{l};
+    if(l.title.toLowerCase().includes(q)||(l.subject||"").toLowerCase().includes(q))return{l};
+    const hit=l.segs.find(s=>s.src.toLowerCase().includes(q)||(s.dst||"").toLowerCase().includes(q));
+    return hit?{l,hit:hit.src.toLowerCase().includes(q)?hit.src:hit.dst}:null;
+  }).filter(Boolean);
+  $("grid").innerHTML=items.length?items.map(({l,hit})=>`<button class="lec" onclick="openDetail('${l.id}')"><span class="pill">${esc(l.subject||"Sans matière")}</span><h3>${esc(l.title)}</h3>${hit?`<div class="hit">« ${esc(hit.slice(0,120))} »</div>`:""}<div class="meta">${new Date(l.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short",year:"numeric"})} · ${dur(l.ms)}${l.hasAudio?" · audio":""}</div></button>`).join("")
+    :`<div class="card empty" style="grid-column:1/-1"><b>${list.length?"Aucun résultat":"Aucun cours pour l'instant"}</b><p>${list.length?"Essayez un autre mot.":"Vos cours enregistrés apparaîtront ici."}</p></div>`;
+}
+$("search").oninput=renderLib;$("subjectFilter").onchange=renderLib;
+
+let current=null, audioUrl=null;
+async function openDetail(id){
+  current=loadLectures().find(l=>l.id===id);if(!current)return;
+  $("lib-list").classList.add("hidden");$("lib-detail").classList.remove("hidden");
+  $("d-title").textContent=current.title;
+  $("d-meta").textContent=[current.subject,new Date(current.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}),dur(current.ms)].filter(Boolean).join(" · ");
+  $("d-count").textContent=current.segs.length+" phrases";
+  $("d-rows").innerHTML=current.segs.map((s,i)=>`<div class="row" style="animation:none"><button class="t" style="border:0;background:none;text-align:left;cursor:${current.hasAudio?"pointer":"default"}" onclick="seek(${s.t})">${clock(s.t)}</button><div class="pair"><div class="src">${esc(s.src)}</div><div class="dst">${s.dst?esc(s.dst):`<button class="link" style="border:0;background:none;color:#dc2626;padding:0" onclick="retryStored(${i})">Traduire</button>`}</div></div></div>`).join("")||`<div class="empty"><p>Aucune phrase.</p></div>`;
+  renderSummary();
+  if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=null}
+  $("d-audio").classList.add("hidden");$("d-dl-audio").classList.toggle("hidden",!current.hasAudio);
+  if(current.hasAudio){try{const b=await idb.get(id);if(b){audioUrl=URL.createObjectURL(b);$("d-audio").src=audioUrl;$("d-audio").classList.remove("hidden")}}catch{}}
+  scrollTo(0,0);
+}
+function closeDetail(){$("lib-detail").classList.add("hidden");$("lib-list").classList.remove("hidden");current=null;$("d-audio").pause?.()}
+window.seek=ms=>{const a=$("d-audio");if(!audioUrl)return;a.currentTime=ms/1000;a.play().catch(()=>{})};
+function updateCurrent(){const list=loadLectures();const i=list.findIndex(l=>l.id===current.id);if(i>-1){list[i]=current;storeLectures(list)}}
+window.retryStored=async i=>{
+  const s=current.segs[i];
+  try{s.dst=await translate(s.src,current.src,current.dst);updateCurrent();openDetail(current.id)}catch{toast("Traduction indisponible pour le moment")}
+};
+function renameLecture(){
+  const t=prompt("Nouveau titre :",current.title);if(t===null)return;
+  const sub=prompt("Matière :",current.subject||"");current.title=t.trim()||current.title;if(sub!==null)current.subject=sub.trim();
+  updateCurrent();openDetail(current.id);
+}
+async function deleteLecture(){
+  if(!confirm(`Supprimer « ${current.title} » ?`))return;
+  storeLectures(loadLectures().filter(l=>l.id!==current.id));try{await idb.del(current.id)}catch{}
+  toast("Cours supprimé");closeDetail();renderLib();
+}
+
+/* ---------- Exports ---------- */
+function transcriptFor(l,withTr){return l.segs.map(s=>`[${clock(s.t)}] ${s.src}`+(withTr&&s.dst?`\n         ${s.dst}`:"")).join("\n")}
+function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+const safeName=s=>s.replace(/[\\/:*?"<>|]/g,"").slice(0,60)||"cours";
+function downloadText(){
+  const l=current;const head=`${l.title}\n${[l.subject,new Date(l.date).toLocaleDateString("fr-FR"),dur(l.ms)].filter(Boolean).join(" · ")}\n\n`;
+  download(safeName(l.title)+".txt",new Blob([head+transcriptFor(l,true)],{type:"text/plain;charset=utf-8"}));
+}
+async function downloadAudio(){const b=await idb.get(current.id).catch(()=>null);if(!b)return toast("Audio introuvable");download(safeName(current.title)+(b.type.includes("mp4")?".m4a":".webm"),b)}
+async function copyPrompt(kind){
+  const l=current;
+  const notes=`Voici la transcription d'un cours universitaire (« ${l.title}»${l.subject?`, matière : ${l.subject}`:""}), dictée automatiquement : il peut y avoir des erreurs de reconnaissance.
+
+Rédige en français des notes de cours structurées avec :
+1. Titre du cours
+2. Introduction générale
+3. Thèmes principaux et sous-thèmes
+4. Explications détaillées
+5. Définitions importantes
+6. Concepts clés
+7. Exemples donnés par le professeur
+8. Chiffres et statistiques cités
+9. Tableau de vocabulaire anglais – français
+10. Questions d'examen possibles
+11. Résumé de révision court
+
+Règles : n'invente rien qui n'a pas été dit en cours. Si tu ajoutes une explication pour m'aider à comprendre, mets-la dans une section à part intitulée « Compléments ajoutés par l'IA ».
+
+TRANSCRIPTION :
+${transcriptFor(l,false)}`;
+  const quiz=`Voici la transcription d'un cours universitaire (« ${l.title}»${l.subject?`, matière : ${l.subject}`:""}).
+
+À partir uniquement de ce cours, prépare-moi pour l'examen, en français :
+- 10 flashcards (question / réponse courte)
+- un quiz de 8 questions à choix multiples (4 options), avec les bonnes réponses et une explication à la fin
+- les 5 points que je dois absolument maîtriser
+
+TRANSCRIPTION :
+${transcriptFor(l,false)}`;
+  const text=kind==="notes"?notes:quiz;
+  try{await navigator.clipboard.writeText(text)}catch{
+    const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+  }
+  toast("Copié. Collez-le dans Claude");
+  setTimeout(()=>window.open("https://claude.ai/new","_blank"),700);
+}
+async function exportBackup(){
+  const list=loadLectures();
+  download(`classnote-sauvegarde-${new Date().toISOString().slice(0,10)}.json`,new Blob([JSON.stringify({v:1,lectures:list})],{type:"application/json"}));
+  toast("Sauvegarde téléchargée (texte uniquement, sans audio)");
+}
+async function importBackup(file){
+  if(!file)return;
+  try{const d=JSON.parse(await file.text());const incoming=d.lectures||[];const list=loadLectures();const ids=new Set(list.map(l=>l.id));
+    const merged=[...incoming.filter(l=>!ids.has(l.id)).map(l=>({...l,hasAudio:false})),...list].sort((a,b)=>b.date.localeCompare(a.date));
+    storeLectures(merged);renderLib();toast(`${merged.length-list.length} cours importé(s)`);
+  }catch{alertBox("Fichier de sauvegarde invalide.")}
+}
+
+/* ---------- Résumé IA (gratuit) ---------- */
+function closeModal(id){$(id).classList.remove("open")}
+["sumModal","helpModal"].forEach(id=>$(id).onclick=e=>{if(e.target.id===id)closeModal(id)});
+function openHelp(){$("helpModal").classList.add("open")}
+const langName={en:"anglais",fr:"français",es:"espagnol"};
+
+function summaryHTML(sm,forPrint){
+  if(!sm)return"";
+  let h="";
+  if(sm.overview)h+=`<p class="ov">${esc(sm.overview)}</p>`;
+  if(sm.points?.length)h+=`<ul>${sm.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`;
+  if(sm.text)h+=forPrint?sm.text.split(/\n+/).map(l=>`<p style="margin:0 0 6px">${esc(l)}</p>`).join(""):`<div class="txt">${esc(sm.text)}</div>`;
+  return h;
+}
+function renderSummary(){
+  const box=$("d-summary");const sm=current?.summary;
+  if(!sm){box.classList.add("hidden");return}
+  box.classList.remove("hidden");
+  box.innerHTML=`<div class="sum-head"><h3>Résumé du cours</h3><div class="actions"><button class="btn ghost" onclick="openSummary(true)">Refaire</button><button class="btn ghost" onclick="deleteSummary()">Effacer</button></div></div>${summaryHTML(sm)}
+  <div class="note">${sm.source==="chrome"?"Généré par l'IA intégrée à Chrome à partir de la transcription. Vérifiez les points importants.":"Résumé collé depuis une IA."}</div>`;
+}
+function deleteSummary(){if(!confirm("Effacer ce résumé ?"))return;delete current.summary;updateCurrent();renderSummary()}
+
+async function chromeSummarizerState(){
+  try{if(!("Summarizer" in self))return"none";return await Summarizer.availability()}catch{return"none"}
+}
+async function openSummary(redo){
+  if(!current.segs.length)return toast("Ce cours est vide");
+  if(current.summary&&!redo){$("d-summary").scrollIntoView({behavior:"smooth"});return}
+  const st=await chromeSummarizerState();
+  const canLocal=st==="available"||st==="downloadable"||st==="downloading";
+  $("sumBody").innerHTML=`
+    ${canLocal?`<p class="small" style="font-size:14px;color:var(--ink2);margin:0">Le résumé est fait par l'IA intégrée à Chrome, directement sur votre ordinateur. Gratuit et privé.${st!=="available"?" La première fois, Chrome télécharge le modèle (quelques minutes, une seule fois).":""}</p>
+      <div class="modal-actions" style="margin-top:14px"><span></span><button class="btn primary" id="sumGo" onclick="runLocalSummary()">Générer le résumé</button></div>
+      <div id="sumProg" class="hidden"><div class="small" id="sumStep" style="margin-top:12px">Préparation…</div><div class="progress"><i id="sumBar"></i></div></div>
+      <p class="small" style="margin:18px 0 0">Ou avec une autre IA :</p>`
+    :`<p class="small" style="font-size:14px;color:var(--ink2);margin:0">Ce navigateur n'a pas d'IA intégrée. Solution gratuite en 3 clics : on copie le cours avec les consignes, vous collez dans une IA, puis vous recollez le résumé ici pour le garder (et l'avoir dans le PDF).</p>`}
+    <div class="ai-links">
+      <button class="btn secondary" onclick="copySummaryPrompt('https://claude.ai/new')">1. Copier et ouvrir Claude</button>
+      <button class="btn secondary" onclick="copySummaryPrompt('https://chatgpt.com/')">1. Copier et ouvrir ChatGPT</button>
+      <button class="btn secondary" onclick="copySummaryPrompt('https://gemini.google.com/app')">1. Copier et ouvrir Gemini</button>
+    </div>
+    <label class="lbl">2. Collez ici le résumé obtenu</label>
+    <textarea class="field" id="sumPaste" placeholder="Collez le résumé ici…"></textarea>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal('sumModal')">Annuler</button><button class="btn primary" onclick="savePastedSummary()">Garder ce résumé</button></div>`;
+  $("sumModal").classList.add("open");
+}
+function summaryPrompt(l){
+  return `Voici la transcription automatique d'un cours universitaire (« ${l.title} »${l.subject?`, matière : ${l.subject}`:""}). Il peut y avoir des erreurs de reconnaissance vocale.
+
+Fais-moi en français un résumé clair pour réviser :
+- un paragraphe d'introduction (3-4 phrases) qui dit de quoi parle le cours
+- les 8 à 12 points clés, en phrases courtes
+- les définitions importantes
+- 3 questions d'examen possibles
+
+N'invente rien qui n'a pas été dit en cours. Écris en texte simple, sans tableau.
+
+TRANSCRIPTION :
+${transcriptFor(l,false)}`;
+}
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text)}catch{
+    const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+  }
+}
+async function copySummaryPrompt(url){
+  await copyText(summaryPrompt(current));
+  toast("Copié. Collez dans l'IA, puis revenez coller le résumé ici");
+  setTimeout(()=>window.open(url,"_blank"),600);
+}
+function savePastedSummary(){
+  const t=$("sumPaste").value.trim();
+  if(t.length<20)return toast("Collez d'abord le résumé");
+  current.summary={text:t.replace(/\*\*/g,"").replace(/^#+\s*/gm,""),source:"paste",at:new Date().toISOString()};
+  updateCurrent();closeModal("sumModal");renderSummary();toast("Résumé enregistré");
+}
+
+async function runLocalSummary(){
+  const l=current;
+  $("sumGo").disabled=true;$("sumProg").classList.remove("hidden");
+  const step=t=>$("sumStep").textContent=t, bar=v=>$("sumBar").style.width=Math.round(v*100)+"%";
+  try{
+    const src=l.src.slice(0,2), out=["en","es","ja"].includes(src)?src:"en";
+    const base={format:"plain-text",expectedInputLanguages:[src],outputLanguage:out,
+      sharedContext:"Transcript of a university lecture, produced by automatic speech recognition (may contain errors).",
+      monitor(m){m.addEventListener("downloadprogress",e=>{step("Téléchargement de l'IA de Chrome (une seule fois)…");bar(e.loaded)})}};
+    step("Préparation de l'IA…");
+    const kp=await Summarizer.create({...base,type:"key-points",length:"long"});
+    // Découpage des cours longs en morceaux que l'IA peut lire
+    const lines=l.segs.map(s=>s.src);const chunks=[];let cur="";
+    const limit=Math.max(2000,Math.min(12000,(kp.inputQuota||6000)*2.5));
+    for(const ln of lines){if((cur+" "+ln).length>limit&&cur){chunks.push(cur);cur=ln}else cur+=(cur?" ":"")+ln}
+    if(cur)chunks.push(cur);
+    const parts=[];
+    for(let i=0;i<chunks.length;i++){
+      step(`Lecture du cours… ${i+1}/${chunks.length}`);bar(.1+.6*i/chunks.length);
+      parts.push(await kp.summarize(chunks[i],{context:`Part ${i+1} of ${chunks.length} of the lecture "${l.title}".`}));
+    }
+    let points=parts.join("\n").split(/\n+/).map(x=>x.replace(/^\s*[-*•\d.)]+\s*/,"").trim()).filter(x=>x.length>3);
+    if(chunks.length>1&&points.length>14){
+      step("Regroupement des points clés…");bar(.75);
+      const merged=await kp.summarize(points.join("\n"),{context:"These are key points from all parts of one lecture. Merge them into the most important points, without repetition."});
+      points=merged.split(/\n+/).map(x=>x.replace(/^\s*[-*•\d.)]+\s*/,"").trim()).filter(x=>x.length>3);
+    }
+    points=[...new Map(points.map(x=>[x.toLowerCase(),x])).values()].slice(0,15);
+    step("Vue d'ensemble…");bar(.82);
+    const tl=await Summarizer.create({...base,type:"tldr",length:"medium"});
+    let overview=await tl.summarize(points.join("\n"),{context:`Key points of the lecture "${l.title}". Write a short overview of what the lecture is about.`});
+    kp.destroy?.();tl.destroy?.();
+    const target=l.dst||"fr";
+    if(out!==target){
+      step(`Traduction en ${langName[target]||target}…`);bar(.9);
+      overview=await translate(overview,out,target).catch(()=>overview);
+      points=await Promise.all(points.map(p=>translate(p,out,target).catch(()=>p)));
+    }
+    bar(1);
+    current.summary={overview:overview.trim(),points,source:"chrome",at:new Date().toISOString()};
+    updateCurrent();closeModal("sumModal");renderSummary();toast("Résumé prêt");
+    $("d-summary").scrollIntoView({behavior:"smooth"});
+  }catch(e){
+    $("sumGo").disabled=false;$("sumProg").classList.add("hidden");
+    alertBox("L'IA de Chrome n'a pas pu faire le résumé ("+esc(e.message||e)+"). Utilisez les boutons Claude, ChatGPT ou Gemini juste en dessous.","warn");
+    $("sumModal").querySelector(".modal").prepend($("alerts").firstElementChild);
+  }
+}
+
+/* ---------- PDF ---------- */
+function printLecture(){
+  const l=current;
+  const meta=[l.subject,new Date(l.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}),dur(l.ms)].filter(Boolean).join(" · ");
+  $("print").innerHTML=`<h1>${esc(l.title)}</h1><div class="pm">${esc(meta)}</div>
+    ${l.summary?`<h2>Résumé</h2>${summaryHTML(l.summary,true)}`:""}
+    <h2>Transcription${l.segs.some(s=>s.dst)?" et traduction":""}</h2>
+    <table>${l.segs.map(s=>`<tr><td class="tm">${clock(s.t)}</td><td>${esc(s.src)}</td>${s.dst?`<td class="tr">${esc(s.dst)}</td>`:"<td></td>"}</tr>`).join("")}</table>
+    <div class="ft">ClassNote · transcription automatique, peut contenir des erreurs.</div>`;
+  const old=document.title;document.title=safeName(l.title);
+  if(!l.summary)toast("Astuce : faites le Résumé IA avant, il sera inclus dans le PDF");
+  setTimeout(()=>{window.print();document.title=old},l.summary?100:900);
+}
+
+/* ---------- Partager un cours ---------- */
+async function shareLecture(){
+  const l={...current,hasAudio:false};
+  const name=safeName(l.title)+".classnote.json";
+  const file=new File([JSON.stringify({v:1,lectures:[l]})],name,{type:"application/json"});
+  try{
+    if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:l.title,text:"Cours partagé depuis ClassNote : ouvre ClassNote → Mes cours → Importer."});return}
+  }catch(e){if(e.name==="AbortError")return}
+  download(name,file);
+  toast("Fichier téléchargé : envoyez-le à votre ami (WhatsApp, e-mail…)");
+}
+
+/* ---------- Démarrage ---------- */
+renderControls();
+if(!localStorage.getItem("classnote_seen")){localStorage.setItem("classnote_seen","1");setTimeout(openHelp,400)}
+if(!SR)alertBox("Ce navigateur ne propose pas la reconnaissance vocale. Ouvrez cette page dans <b>Google Chrome</b>, <b>Edge</b> ou <b>Safari</b>.","warn");
+else if(isMobile)alertBox("Sur téléphone : gardez l'écran allumé, l'application au premier plan, et posez le téléphone micro vers le prof.","info","mob");
+</script>
+</body>
+</html>
